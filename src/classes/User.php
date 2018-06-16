@@ -13,6 +13,11 @@ class User {
 		return $this->id;
 	}
 	
+	public function getUsername(){
+		return $this->username;
+	}
+	
+	
 	public function setId($id){
 		$this->id = $id;
 	} 

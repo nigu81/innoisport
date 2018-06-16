@@ -47,6 +47,42 @@ class TeamManager {
  
         return $results;
     }
+    
+    public function getTeamsByCoachUserId($user_id, $db) {
+        $sql = "SELECT t.id, t.name
+				from users u
+				join coaches c on c.user_id = u.id
+				join teams_coaches tc on tc.coach_id = c.id
+				join teams t on tc.team_id = t.id
+				where u.id = :user_id
+				and u.active = 1";
+            
+        $stmt = $db->prepare($sql);
+		
+		$stmt->execute(["user_id" => $user_id]);    
+
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+ 
+        return $results;
+    }
+    
+    public function getTeamsByAthleteUserId($user_id, $db) {
+        $sql = "SELECT t.id, t.name
+				from users u
+				join athletes a on a.user_id = u.id
+				join teams_athletes ta on ta.athlete_id = a.id
+				join teams t on ta.team_id = t.id
+				where u.id = :user_id
+				and u.active = 1";
+            
+        $stmt = $db->prepare($sql);
+		
+		$stmt->execute(["user_id" => $user_id]);    
+
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+ 
+        return $results;
+    }
 	
 	public function getEventsByCompanyIdAndTeamId($company_id, $team_id, $db) {
         $sql = "SELECT e.id, e.name as event_name, e.event_date, t.name as team_name, et.type 

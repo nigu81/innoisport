@@ -266,7 +266,7 @@ $app->post('/company/{company_id}/team/{team_id}/coach/{coach_id}', function (Re
 
 // forse da eliminare, non mi sermbra utile
 $app->get('/users', function (Request $request, Response $response, $args) {
-
+	
 	$logged_user = $this->user_manager->getBasicHttpAuthenticatication($request,$response,$this->db);
 	
 	$isAdmin = $this->user_manager->isUserAdminById($logged_user->getId(),$this->db);
@@ -278,6 +278,32 @@ $app->get('/users', function (Request $request, Response $response, $args) {
                         ->write(json_encode($users));
 
 });
+
+$app->get('/user/self', function (Request $request, Response $response, $args) {
+	
+	$logged_user = $this->user_manager->getBasicHttpAuthenticatication($request,$response,$this->db);
+	
+	$user_companies = $this->company_manager->getCompaniesByIdUser($logged_user->getId(), $this->db);
+	//var_dump($user_companies);
+	
+	$user_coach_teams = $this->team_manager->getTeamsByCoachUserId($logged_user->getId(), $this->db);
+	
+	$user_athlete_teams = $this->team_manager->getTeamsByAthleteUserId($logged_user->getId(), $this->db);
+	//var_dump($user_athlete_teams);
+	$result = ["user"=>["id"=>$logged_user->getId(),"username"=>$logged_user->getUsername(), 
+				"admin_in"=>$user_companies,
+				"coach_in"=>$user_coach_teams,
+				"athlete_in"=>$user_athlete_teams
+			]];
+	//,$user_companies,$user_coach_teams,$user_athlete_teams;
+	
+	//$users = $this->user_manager->getUsers($this->db);
+    return $response->withStatus(200)
+                        ->withHeader('Content-Type', 'application/json')
+                        ->write(json_encode($result));
+
+});
+
 
 // da aggiungere get user by email
 $app->get('/user/{user_id}', function (Request $request, Response $response, $args) {
